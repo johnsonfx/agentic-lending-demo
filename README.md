@@ -1,4 +1,4 @@
-# Agentic credit lending — reference demo
+# Agentic credit lending — demo
 
 An end-to-end agentic lending journey: a chat front end, an orchestration
 agent driven by Claude, and a tool layer standing in for the credit bureau,
