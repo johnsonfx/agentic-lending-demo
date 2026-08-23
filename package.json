@@ -1,0 +1,48 @@
+{
+  "name": "agentic-lending-demo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Reference demo: an agentic unsecured personal loan journey \u2014 chat UI, a Claude-driven application agent, and an MCP tool server carrying the underwriting controls.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.3.0"
+  },
+  "scripts": {
+    "dev": "concurrently -n web,api,mcp -c cyan,magenta,green \"vite\" \"tsx server/index.ts\" \"tsx mcp-server/index.ts\"",
+    "web": "vite",
+    "api": "tsx server/index.ts",
+    "mcp": "tsx mcp-server/index.ts",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "bench": "tsx scripts/bench.ts",
+    "diagram": "node scripts/export-diagram.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.120.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "better-sqlite3": "^11.10.0",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.45.2",
+    "express": "^4.19.2",
+    "fastmcp": "^4.16.8",
+    "mammoth": "^1.12.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^9.0.1",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.23.12",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.0"
+  }
+}
