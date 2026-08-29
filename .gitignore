@@ -3,3 +3,14 @@ dist
 .env
 data/
 .DS_Store
+
+# Deliberately withheld from this publication — see README.
+config/
+docs/architecture.md
+docs/key-learnings.md
+server/agent/tools.ts
+server/domain/fraud.ts
+server/domain/customers.ts
+server/fraudPolicyDocument.ts
+server/fraudReviewPromptContent.ts
+server/policyDocument.ts
