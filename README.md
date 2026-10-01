@@ -28,9 +28,13 @@ with a wrong number. A SQLite database is created at `data/app.db` on first
 run — no setup step needed.
 
 For a deeper look than this file goes into, see
-[`docs/architecture.svg`](docs/architecture.svg) (the system diagram — what
-talks to what) and [`docs/performance.md`](docs/performance.md) (measured
-latency, and where the time actually goes).
+[`docs/architecture.md`](docs/architecture.md) (what talks to what, and why
+the boundaries are drawn where they are — with
+[`architecture.svg`](docs/architecture.svg) and
+[`sequence.svg`](docs/sequence.svg) as the exported diagrams),
+[`docs/performance.md`](docs/performance.md) (measured latency, and where
+the time actually goes), and [`docs/key-learnings.md`](docs/key-learnings.md)
+(a running, non-technical record of the decisions behind the build and why).
 
 Four fixture applicants are offered as one-tap chips in the chat:
 
@@ -66,14 +70,23 @@ Four fixture applicants are offered as one-tap chips in the chat:
                       │ MCP over local HTTP (:8788)
                       │ (not publicly exposed — see below)
   ┌───────────────────▼────────────────────────────────┐
-  │  mcp-server/index.ts — the tool server, :8788      │
-  │  fastmcp; every call carries an application_id     │
+  │  mcp-server/index.ts — the ONE tool server, :8788  │
+  │  fastmcp; authenticate() + canAccess gate who sees │
+  │  what — see "Staff portal" below                  │
   ├────────────────────────────────────────────────────┤
-  │  agent/tools.ts — registry + preconditions         │   the control surface
+  │  agent/tools.ts — customer registry (open)         │   the control surface
+  │  agent/staffTools.ts — staff-only (canAccess)      │
   │  domain/policy.ts  customers.ts  fraud.ts          │   swap for real systems
   │  applications.ts — SQLite-backed application record│
   └───────────────────┬────────────────────────────────┘
-                      ▼  api.anthropic.com  (both processes call this directly)
+                      ▼  api.anthropic.com  (orchestrator + fraud reviewer)
+
+  Staff portal — a second client of the same tool server, no code shared
+  ┌────────────────────────────────────────────────────┐
+  │  staff/ (:5174, React) → staff-server/ (:8791)      │
+  │  session + OIDC login ⇄ Keycloak (:8080, docker)    │
+  │  → mcp-server, Bearer <access_token>                │
+  └────────────────────────────────────────────────────┘
 ```
 
 Everything that used to run in the browser — the orchestration loop, every
@@ -145,6 +158,22 @@ belongs in a public repo.
 
 ---
 
+## Staff portal
+
+A second, human client of the same tool server — a queue for the referrals `run_policy_checks` and `generate_offer` hold instead of answering (a score just under the floor, or an offer over `referralPrincipalThreshold`), plus a general view of every application. The customer never waits on this beyond their own next message: there's no other contact channel, so resolution is delivered whenever they next write in.
+
+Run it:
+
+```bash
+docker compose up -d        # Keycloak, dev mode, no TLS — see docker-compose.yml
+npm run dev:staff            # staff web on :5174, staff api on :8791
+```
+
+Needs the main `npm run dev` (or at least `mcp-server`) already running. Sign in as the seeded dev user — `officer1` / `password123`, defined in `keycloak/realm-export.json` and imported automatically on first boot. None of this — the realm, the client secret, the admin password — is fit to be anything but local and disposable.
+
+One MCP server, two audiences: `mcp-server/index.ts` classifies every connection with `authenticate()` (no bearer token → the customer orchestrator, unchanged; a verified staff JWT → `role: "staff"`) and `agent/staffTools.ts`'s three tools are the only ones gated by it (`canAccess: (auth) => auth.role === "staff"`) — a customer-agent connection never sees they exist. `resolve_referral` takes the reviewer's identity from that verified token, never from its arguments.
+
+---
 
 ## React Native port
 

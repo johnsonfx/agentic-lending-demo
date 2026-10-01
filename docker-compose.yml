@@ -1,0 +1,20 @@
+# Local Keycloak for the staff portal — dev mode only (H2, in-memory realm
+# import, no TLS). Nothing here is fit to face the internet: see the
+# "Staff portal" section of README.md.
+#
+#   docker compose up -d
+#
+# Pinned to 25.0, the last major line before the bootstrap-admin env vars
+# were renamed (KEYCLOAK_ADMIN/KEYCLOAK_ADMIN_PASSWORD -> KC_BOOTSTRAP_ADMIN_*
+# in 26+) — upgrading the image tag means updating those two env names too.
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.6
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro

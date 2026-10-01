@@ -2,7 +2,7 @@
   "name": "agentic-lending-demo",
   "private": true,
   "version": "0.1.0",
-  "description": "Reference demo: an agentic unsecured personal loan journey \u2014 chat UI, a Claude-driven application agent, and an MCP tool server carrying the underwriting controls.",
+  "description": "Reference demo: an agentic unsecured personal loan journey \u2014 chat UI, a Claude-driven application agent, an MCP tool server carrying the underwriting controls, and a Keycloak-authenticated staff portal for human-in-the-loop referrals.",
   "type": "module",
   "engines": {
     "node": ">=20.3.0"
@@ -17,7 +17,10 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "bench": "tsx scripts/bench.ts",
-    "diagram": "node scripts/export-diagram.mjs"
+    "diagram": "node scripts/export-diagram.mjs",
+    "staff:api": "tsx staff-server/index.ts",
+    "staff:web": "vite --config vite.staff.config.js",
+    "dev:staff": "concurrently -n staff-web,staff-api -c yellow,red \"npm:staff:web\" \"npm:staff:api\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",
@@ -26,8 +29,11 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.45.2",
     "express": "^4.19.2",
+    "express-session": "^1.19.0",
     "fastmcp": "^4.16.8",
+    "jose": "^6.2.12",
     "mammoth": "^1.12.1",
+    "openid-client": "^6.8.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "zod": "^4.4.3"
@@ -35,6 +41,7 @@
   "devDependencies": {
     "@types/better-sqlite3": "^9.6.0",
     "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
     "@types/node": "^26.2.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",

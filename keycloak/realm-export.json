@@ -1,0 +1,42 @@
+{
+  "realm": "agentic-lending",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "roles": {
+    "realm": [
+      { "name": "staff", "description": "Can sign in to the back-office staff portal." }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "staff-portal",
+      "name": "Staff portal (dev)",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "secret": "dev-secret-change-me",
+      "redirectUris": ["http://localhost:8791/auth/callback"],
+      "webOrigins": ["http://localhost:5174", "http://localhost:8791"],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "fullScopeAllowed": true
+    }
+  ],
+  "users": [
+    {
+      "username": "officer1",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "officer1@example.com",
+      "firstName": "Test",
+      "lastName": "Officer",
+      "credentials": [
+        { "type": "password", "value": "password123", "temporary": false }
+      ],
+      "realmRoles": ["staff"]
+    }
+  ]
+}

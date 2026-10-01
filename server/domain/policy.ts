@@ -40,6 +40,10 @@ export interface PolicyConfig {
   tenors: number[];
   pricing: PricingTier[];
   processingFeePct: number;
+
+  // Human referral — see server/agent/tools.ts's referral state machine
+  referralScoreMargin: number;
+  referralPrincipalThreshold: number;
 }
 
 /* ---- shared calculation helpers -------------------------------------- */

@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { db } from "./db/client.js";
 import { applications } from "./db/schema.js";
@@ -52,6 +52,32 @@ export async function getApplication(id: string): Promise<ApplicationRecord | nu
     msgs: row.msgs as ChatMsg[],
     trace: row.trace as TraceEntry[],
   };
+}
+
+export interface ApplicationSummary {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  state: ApplicationState;
+}
+
+/**
+ * For the staff dashboard's list/queue view — every application, newest
+ * first, without `history`/`msgs`/`trace`'s full JSON. `getApplication`
+ * above stays the one place a full record (transcript + trace) is loaded,
+ * for the detail view.
+ */
+export async function listApplications(): Promise<ApplicationSummary[]> {
+  const rows = await db
+    .select({
+      id: applications.id,
+      createdAt: applications.createdAt,
+      updatedAt: applications.updatedAt,
+      state: applications.state,
+    })
+    .from(applications)
+    .orderBy(desc(applications.updatedAt));
+  return rows.map((r) => ({ ...r, state: r.state as ApplicationState }));
 }
 
 /** Written by the MCP server, once per tool call. Never touches history/msgs/trace. */

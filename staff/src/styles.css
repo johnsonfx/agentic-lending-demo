@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+/* Same token family as the customer app (src/styles.css) for visual
+   consistency across the two clients — a deliberately separate file, not a
+   shared import, since these are two independent vite roots. */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+
+.staff {
+  --paper:#F7F6F3; --card:#FFFFFF; --ink:#14181F; --slab:#161C27; --slab2:#1E2634;
+  --rule:#E2DFD8; --rule-d:#2A3342; --mut:#6E7480; --mut-d:#8A93A3;
+  --accent:#3A4FD6; --accent-l:#7C8AF0; --pass:#1B7A5A; --fail:#B0402F; --warn:#B8860B;
+
+  font-family:'Inter',system-ui,sans-serif; color:var(--ink);
+  display:flex; flex-direction:column; height:100%; background:var(--paper);
+  -webkit-font-smoothing:antialiased;
+}
+
+.dim { color:var(--mut); font-size:13px; }
+.pad { padding:14px 16px; }
+
+.centered { align-items:center; justify-content:center; }
+.centered-msg { padding:40px; text-align:center; }
+
+.signin { text-align:center; max-width:320px; }
+.signin h1 { font-family:'Archivo'; font-size:20px; margin-bottom:8px; }
+.signin p { margin-bottom:18px; }
+
+.btn { display:inline-block; font-family:'Archivo'; font-weight:600; font-size:12px; letter-spacing:.03em;
+  padding:9px 16px; border-radius:20px; border:1px solid var(--rule); background:var(--card); color:var(--ink);
+  text-decoration:none; cursor:pointer; }
+.btn.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+.btn.danger { background:#fff; color:var(--fail); border-color:var(--fail); }
+.btn.ghost { background:none; }
+.btn:disabled { opacity:.4; cursor:default; }
+
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 18px;
+  border-bottom:1px solid var(--rule); }
+.topbar h1 { font-family:'Archivo'; font-size:15px; font-weight:700; }
+.who { display:flex; align-items:center; gap:10px; }
+
+.body { flex:1; display:flex; min-height:0; }
+
+.listpane { width:320px; border-right:1px solid var(--rule); display:flex; flex-direction:column; min-height:0; }
+.tabs { display:flex; gap:2px; padding:10px 12px; border-bottom:1px solid var(--rule); }
+.tabs button { font-family:'Archivo'; font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+  background:none; border:0; border-radius:14px; padding:7px 12px; color:var(--mut); cursor:pointer; }
+.tabs button.on { background:var(--ink); color:#fff; }
+
+.rows { list-style:none; overflow-y:auto; flex:1; }
+.rows li { padding:12px 16px; border-bottom:1px solid var(--rule); cursor:pointer; }
+.rows li:hover { background:var(--card); }
+.rows li.on { background:#EFF0FB; }
+.rows li.pending { border-left:3px solid var(--warn); }
+.row-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.name { font-weight:600; font-size:13px; }
+.pill { font-family:'JetBrains Mono'; font-size:9.5px; font-weight:700; letter-spacing:.05em;
+  padding:2px 7px; border-radius:10px; }
+.pill.pending { background:rgba(184,134,11,.15); color:var(--warn); }
+.row-bottom { display:flex; gap:8px; font-size:11px; color:var(--mut); }
+.reason { font-style:italic; }
+
+.detailpane { flex:1; overflow-y:auto; padding:20px 26px; }
+.detail { display:flex; flex-direction:column; gap:22px; max-width:900px; }
+.detail h2 { font-family:'Archivo'; font-size:13px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.04em; color:var(--mut); margin-bottom:10px; }
+
+/* ---- status tracker ---- */
+.tracker { display:flex; align-items:center; flex-wrap:wrap; gap:0; padding:14px 16px;
+  background:var(--card); border:1px solid var(--rule); border-radius:8px; }
+.step { display:flex; align-items:center; gap:6px; }
+.step .dot { width:9px; height:9px; border-radius:50%; background:var(--rule); flex-shrink:0; }
+.step .steplabel { font-family:'Archivo'; font-size:11px; font-weight:600; color:var(--mut); white-space:nowrap; }
+.step.done .dot { background:var(--pass); }
+.step.done .steplabel { color:var(--ink); }
+.step.fail .dot { background:var(--fail); }
+.step.fail .steplabel { color:var(--fail); }
+.step.pending .dot { background:var(--warn); box-shadow:0 0 0 3px rgba(184,134,11,.18); }
+.step.pending .steplabel { color:var(--warn); }
+.connector { width:18px; height:1px; background:var(--rule); margin:0 8px; flex-shrink:0; }
+
+/* ---- decision rationale ("why") ---- */
+.rationale-block { border:1px solid var(--rule); border-radius:8px; padding:12px 14px; margin-bottom:10px; }
+.rationale-block:last-child { margin-bottom:0; }
+.rationale-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.rtitle { font-family:'Archivo'; font-size:12.5px; font-weight:600; }
+.tag.ok { background:rgba(27,122,90,.12); color:var(--pass); }
+.tag.bad { background:rgba(176,64,47,.12); color:var(--fail); }
+.tag.warn { background:rgba(184,134,11,.12); color:var(--warn); }
+.tag.ai { background:rgba(58,79,214,.12); color:var(--accent); }
+.signals { list-style:none; display:flex; flex-direction:column; gap:4px; font-size:12px; }
+.signals code { font-family:'JetBrains Mono'; font-size:11px; color:var(--accent); }
+.rationale-text { font-size:12.5px; color:var(--mut); line-height:1.5; }
+.checks { width:100%; border-collapse:collapse; font-size:12px; }
+.checks td { padding:4px 6px; border-bottom:1px solid var(--rule); }
+.checks tr:last-child td { border-bottom:0; }
+.checks tr.ok .rule { color:var(--pass); }
+.checks tr.bad .rule { color:var(--fail); font-weight:600; }
+.checks .observed { color:var(--mut); text-align:right; font-family:'JetBrains Mono'; font-size:11px; }
+
+/* ---- applicant (bureau + affordability) ---- */
+.applicant .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:10px 16px; margin-bottom:14px; }
+.field { display:flex; flex-direction:column; gap:2px; }
+.field .k { font-family:'JetBrains Mono'; font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--mut); }
+.field .v { font-size:13px; font-weight:600; }
+.facilities, .checks { table-layout:fixed; }
+.facilities { width:100%; border-collapse:collapse; font-size:12px; margin-bottom:8px; }
+.facilities th { text-align:left; font-family:'JetBrains Mono'; font-size:9.5px; text-transform:uppercase;
+  letter-spacing:.03em; color:var(--mut); padding:4px 6px; border-bottom:1px solid var(--rule); }
+.facilities td { padding:5px 6px; border-bottom:1px solid var(--rule); }
+.facilities td.ok { color:var(--pass); }
+.facilities td.bad { color:var(--fail); font-weight:600; }
+.default-line { font-size:12px; color:var(--fail); margin-top:4px; }
+
+.tracetoggle { font-family:'Archivo'; font-size:11px; font-weight:600; color:var(--mut);
+  background:none; border:0; cursor:pointer; padding:4px 0; }
+
+.msgs { display:flex; flex-direction:column; gap:8px; }
+.b { max-width:75%; padding:8px 12px; font-size:13px; line-height:1.5; border-radius:12px; white-space:pre-wrap; }
+.b.a { background:var(--card); border:1px solid var(--rule); align-self:flex-start; }
+.b.u { background:var(--ink); color:#fff; align-self:flex-end; }
+.b.s { align-self:center; font-family:'JetBrains Mono'; font-size:10px; color:var(--mut); }
+
+.tracepane { background:var(--slab); border-radius:8px; padding:14px; }
+.tracepane h2 { color:var(--mut-d); }
+.trace { display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto; }
+.trow { display:flex; gap:8px; align-items:baseline; font-size:11.5px; }
+.trow .tk { font-family:'JetBrains Mono'; color:var(--accent-l); flex-shrink:0; }
+.trow.error .tk { color:#F08A78; }
+.trow .tt { color:#C9D0DC; flex:1; }
+.trow .tm { font-family:'JetBrains Mono'; color:var(--mut-d); font-size:10px; }
+
+.referral { border:1px solid var(--rule); border-radius:8px; padding:16px; }
+.detailline { font-family:'JetBrains Mono'; font-size:12px; color:var(--mut); margin-bottom:14px; }
+.review textarea { width:100%; min-height:70px; border:1px solid var(--rule); border-radius:6px; padding:8px;
+  font-family:'Inter'; font-size:13px; resize:vertical; margin-bottom:12px; }
+.actions { display:flex; gap:10px; }
+.resolved p { font-size:13px; margin-bottom:6px; }
+.notes { color:var(--mut); font-style:italic; }
+
+.err { color:var(--fail); padding:20px; }

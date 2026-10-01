@@ -99,6 +99,38 @@ export interface Receipt {
   first_repayment_due: string;
 }
 
+/**
+ * A policy-decline or offer-size case held for a human credit officer before
+ * the customer hears the outcome. `reviewerId`/`reviewerName` are written
+ * only by resolve_referral, from the caller's verified identity — never a
+ * tool argument, the same rule this app already applies to `application_id`.
+ * `consumed` is what lets the blocking tool that raised the referral deliver
+ * a RESOLVED outcome exactly once, then fall back to its ordinary logic.
+ */
+export interface ReferralRecord {
+  status: "PENDING" | "RESOLVED";
+  reason: "NEAR_THRESHOLD_DECLINE" | "HIGH_PRINCIPAL";
+  /** Internal only — never sent to the customer. */
+  detail: string;
+  /**
+   * The exact result the raising tool had already computed the instant
+   * before it held instead of returning it — the DECLINE payload, or the
+   * fully-priced offer. UPHOLD replays this verbatim rather than
+   * recomputing: recomputing would depend on the model re-supplying the
+   * same arguments (e.g. generate_offer's amount/tenor) on the customer's
+   * return, which nothing guarantees, and on policy config being unchanged
+   * since the hold. Replaying the stored result is deterministic either way.
+   */
+  pendingResult: unknown;
+  raisedAt: string;
+  reviewerId: string | null;
+  reviewerName: string | null;
+  decision: "UPHOLD" | "OVERTURN" | null;
+  notes: string | null;
+  resolvedAt: string | null;
+  consumed: boolean;
+}
+
 /** The full per-application record — was newSession()'s in-memory shape,
  *  now loaded from and saved back to a DB row per turn. */
 export interface ApplicationState {
@@ -115,6 +147,7 @@ export interface ApplicationState {
   accepted: boolean;
   bank: BankInfo | null;
   receipt: Receipt | null;
+  referral: ReferralRecord | null;
 }
 
 export function newApplicationState(): ApplicationState {
@@ -132,6 +165,7 @@ export function newApplicationState(): ApplicationState {
     accepted: false,
     bank: null,
     receipt: null,
+    referral: null,
   };
 }
 
@@ -140,11 +174,21 @@ export interface ToolError {
   detail: string;
 }
 
+/**
+ * What a tool call knows about who's calling, when the MCP server bothered
+ * to authenticate them. Optional and ignored by every customer tool — only
+ * resolve_referral (server/agent/staffTools.ts) reads it, to get the
+ * reviewer's identity from a verified source instead of a tool argument.
+ */
+export interface ToolContext {
+  auth?: { role: "customer-agent" | "staff"; sub?: string; username?: string };
+}
+
 export interface ToolDefinition {
   step: number;
   signature: string;
   description: string;
-  handler: (args: Record<string, unknown>) => Promise<unknown>;
+  handler: (args: Record<string, unknown>, ctx?: ToolContext) => Promise<unknown>;
 }
 
 export type ToolRegistry = Record<string, ToolDefinition>;
